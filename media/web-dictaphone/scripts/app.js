@@ -1,3 +1,11 @@
+var audioSocket = new WebSocket('ws://127.0.0.1:8888/audio')
+audioSocket.onopen=(event)=>{
+  console.log("connected server by websocket successfully!");
+}
+audioSocket.onclose=event=>{
+  console.log(event);
+}
+
 // set up basic variables for app
 
 const record = document.querySelector('.record');
@@ -78,6 +86,10 @@ if (navigator.mediaDevices.getUserMedia) {
 
       audio.controls = true;
       const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+      let data =blob.arrayBuffer().then(d=>{
+        audioSocket.send(d);
+      })
+
       chunks = [];
       const audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;
